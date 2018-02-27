@@ -14,6 +14,10 @@
   </head>
   <body class="fill">
 <div class="container fill">
+
+
+
+  <!-- Chat -->
     <div class="col-xs-8 fill">
         <div id="messages">
 
@@ -21,6 +25,10 @@
           <label for="chatbox">Say something to your new friend</label>
           <textarea class="form-control border" id="chatbox" onkeypress="enterCheck()" rows="3"></textarea>
     </div>
+
+
+
+    <!-- Sidebar -->
     <div class="col-xs-4 fill sidebar">
       <div class="card col-xs-12">
         <div class="row"><i class="fa fa-user col-md-3" aria-hidden="true"></i>
@@ -71,7 +79,7 @@
 </div>
 
 
-<!-- Modal -->
+<!-- Modals -->
 <div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -86,16 +94,16 @@
         <!-- <div class="container"> -->
           <div class="row text-center">
             <div class="col-xs-3 text-center">
-              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Ask for link"><i class="fa fa-link" aria-hidden="true"></i></button>
+              <button type="button" onclick="buttonClick('link')" class="btn button btn-outline-dark text-center" data-tooltip="Ask for link" data-dismiss="modal"><i class="fa fa-link" aria-hidden="true"></i></button>
             </div>
             <div class="col-xs-3 text-center">
-              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Commend message"><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Commend message" data-dismiss="modal"><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
             </div>
             <div class="col-xs-3 text-center">
-              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Rebute"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Rebute" data-dismiss="modal"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>
             </div>
             <div class="col-xs-3 text-center">
-              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Report"><i class="fa fa-flag" aria-hidden="true"></i></button>
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Report" data-dismiss="modal"><i class="fa fa-flag" aria-hidden="true"></i></button>
             </div>
             </div>
         <!-- </div> -->
@@ -112,73 +120,10 @@
   <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
   <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chatlib.js') }}"></script>
   <script>
 
-  var user = window.location.pathname.substr(10)
-  var chatdict = {}
-
-  function enterCheck() {
-    var keyPress = window.event.keyCode;
-
-    if (keyPress === 13) {
-      axios.post('/chat', {
-        'User' : user,
-        'Message' : document.getElementById('chatbox').value,
-        'Time' : Date.now()
-      }).then(function(response){
-        if(response.data.status_code === 200){
-          console.log(response.data.chat)
-          $("#chatbox").val('')
-        } else {
-          alert(response.data.message)
-        }
-      }).catch(function(error){
-        console.log(error)
-      })
-    }
-  }
-
-  var highest = -1
-
-  var requestLoop = setInterval(function(){
-    axios.get('/chat').then(function(response){
-      if(response.data.status_code === 200){
-        chatdict = response.data.chat
-        for (var key in response.data.chat){
-          if (parseInt(key) > highest){
-            console.log(response.data.chat[key])
-            $(makediv(response.data.chat, key)).appendTo('#messages');
-            highest = parseInt(key)
-          }
-        }
-      } else {
-        alert(response.data.message)
-      }
-    }).catch(function(error){
-      console.log(error)
-    })
-  }, 1000);
-
-  var makediv = function(dict, key){
-    var str =  `<div id="chat_` + key + `" class="message button hoverable" user="` + dict[key].User + `" data-toggle="modal" data-target=".bd-example-modal-lg">
-        <div class="message_id">` + dict[key].User + `: </div>
-        <p id="message_contents">` + dict[key].Message + `</p>
-       </div>`
-
-
-    return(str)
-
-  }
-
-  $('#myModal').on('show.bs.modal', function (event) {
-  var clickedChat = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = clickedChat.attr('id') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('#quoted-chat').text('"' + clickedChat.find('#message_contents').text() + '" -- by ' + clickedChat.attr('user'))
-  modal.find('.modal-body input').val(recipient)
-})
+  var window_user = window.location.pathname.substr(10)
 
 
   </script>
@@ -210,12 +155,13 @@ li .row input {
 }
 
 #quoted-chat{
-  font-size: 120%;
+  font-size: 140%;
   overflow-y: scroll;
 }
 
 html{
   font-family: 'Lato', sans-serif !important;
+  font-size: 2em;
   height: -moz-calc(100%); /* Firefox */
   height: -webkit-calc(100%); /* Chrome, Safari */
   height: calc(100%); /* IE9+ and future browsers */
@@ -250,8 +196,18 @@ background-color: #f2f2f2; /* make this whatever you want */
 
 .message{
   padding-left: 10px;
+  width: 100%;
+  /*float: left;*/
 }
 
+.message_contents{
+  padding-left: 10px;
+  float: left;
+}
+
+.message_container{
+  float: left;
+}
 
 .message_id{
   font-weight: bold;
@@ -264,6 +220,10 @@ textarea {
 .container {
     margin: 0 auto;
     width: 100%;
+}
+
+.chatWanted{
+    color: blue;
 }
 
 .btn-outline-dark {
@@ -370,5 +330,12 @@ input:focus {
 
 }
 
+.linkWanted{
+  color: blue;
+}
+
+.fa-exclamation{
+  font-size: 15px;
+}
 
 </style>

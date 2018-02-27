@@ -18,8 +18,8 @@ users = pd.DataFrame(columns=['Name', 'Password', 'Understanding','Friendly','In
 users.loc[0] = ['user1', 'user1', 2, 5, 5, 7, 50]
 users.loc[1] = ['user2', 'user2', 3, 8, 4, 1, 31]
 
-chat = pd.DataFrame(columns=['User','Message','Time'])
-chat.loc[0] = ['TALKINGPOINTS', 'You are now talking with a stranger about whether or not battletoads is a good game.\nHave fun!', time.time()]
+chat = pd.DataFrame(columns=['User','Message', 'Time', 'Thumb', 'Rebute', 'Link', 'Url'])
+chat.loc[0] = ['TALKINGPOINTS', 'You are now talking with a stranger about whether or not battletoads is a good game.\nHave fun!', time.time(), 0, 0, 0, '']
 
 @app.route('/chat',methods=['GET','POST'])
 def chat_log():
@@ -28,7 +28,7 @@ def chat_log():
         message = request.get_json()
         print(message)
         try:
-            new_row = pd.DataFrame([[message['User'],message['Message'],message['Time']]], columns=['User','Message','Time'])
+            new_row = pd.DataFrame([[message['User'],message['Message'],message['Time'], 0, 0, 0, '']], columns=['User','Message', 'Time', 'Thumb', 'Rebute', 'Link', 'Url'])
             chat = chat.append(new_row, ignore_index=True)
             print(chat)
             response = {
@@ -75,6 +75,31 @@ def authenticate():
                     'message': "Authenticated",
                     'endpoint': r['Name']
                 }
+
+    except:
+        print(traceback.format_exc())
+        response = {
+            'status_code': 500,
+            'message': "Error",
+        }
+    return jsonify(response)
+
+
+@app.route('/link', methods=['POST'])
+def link():
+    req = request.get_json()
+    global chat
+    print(req)
+    try:
+        # chat_row = chat.iloc[int(req['index'])]
+        # print(chat_row)
+        # chat_row['Link'] = 1
+        chat.at[int(req['index']), 'Link'] = 1
+        print(chat)
+        response = {
+            'status_code': 200,
+            'message': 'logged'
+        }
 
     except:
         print(traceback.format_exc())
