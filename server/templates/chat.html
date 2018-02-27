@@ -2,6 +2,7 @@
 <html lang="en" class="fill">
   <head>
     <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}" rel="stylesheet">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,13 +14,97 @@
   </head>
   <body class="fill">
 <div class="container fill">
-    <div class="col-lg-12 fill">
+    <div class="col-xs-8 fill">
         <div id="messages">
 
         </div>
           <label for="chatbox">Say something to your new friend</label>
           <textarea class="form-control border" id="chatbox" onkeypress="enterCheck()" rows="3"></textarea>
     </div>
+    <div class="col-xs-4 fill sidebar">
+      <div class="card col-xs-12">
+        <div class="row"><i class="fa fa-user col-md-3" aria-hidden="true"></i>
+          <div class="card-block col-md-9">
+            <h4 class="card-title">Other user's info</h4>
+            <p class="card-text">Here there might be some sort of brief user bio to give some insight into why people feel the way that they do.</p>
+          </div>
+        </div>
+        <hr>
+            <div class="row">
+              <div class="col-md-3">
+                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Friendly"><i class="fa fa-child" aria-hidden="true"></i></button>
+              </div>
+              <div class="col-xs-9">
+                <p>Commend your conversation partner for being amiable</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-3">
+                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Scholarly"><i class="fa fa-graduation-cap" aria-hidden="true"></i></button>
+              </div>
+              <div class="col-xs-9">
+                <p>Commend your conversation partner for having ample sources to support their position from credible organizations</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-3">
+                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Insightful"><i class="fa fa-lightbulb" aria-hidden="true"></i></button>
+              </div>
+              <div class="col-xs-9">
+                <p>Commend your conversation partner for bringing insights you had not thought of to the table</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-3">
+                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Report"><i class="fa fa-flag" aria-hidden="true"></i></button>
+              </div>
+              <div class="col-xs-9">
+                <p>Report your conversation partner</p>
+              </div>
+            </div>
+            <hr>
+      </div>
+    <div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Functions for Message:</h3>
+      </div>
+      <div class="modal-body" id="quoted-chat">
+        test
+      </div>
+      <hr>
+      <div class="modal-body" id="actions">
+        <!-- <div class="container"> -->
+          <div class="row text-center">
+            <div class="col-xs-3 text-center">
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Ask for link"><i class="fa fa-link" aria-hidden="true"></i></button>
+            </div>
+            <div class="col-xs-3 text-center">
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Commend message"><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
+            </div>
+            <div class="col-xs-3 text-center">
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Rebute"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>
+            </div>
+            <div class="col-xs-3 text-center">
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Report"><i class="fa fa-flag" aria-hidden="true"></i></button>
+            </div>
+            </div>
+        <!-- </div> -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
   </body>
@@ -28,14 +113,16 @@
   <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
   <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
   <script>
+
+  var user = window.location.pathname.substr(10)
+  var chatdict = {}
+
   function enterCheck() {
-    console.log('outerfuction')
     var keyPress = window.event.keyCode;
 
     if (keyPress === 13) {
-      console.log('here')
       axios.post('/chat', {
-        'User' : window.location.pathname.substr(10),
+        'User' : user,
         'Message' : document.getElementById('chatbox').value,
         'Time' : Date.now()
       }).then(function(response){
@@ -56,10 +143,11 @@
   var requestLoop = setInterval(function(){
     axios.get('/chat').then(function(response){
       if(response.data.status_code === 200){
+        chatdict = response.data.chat
         for (var key in response.data.chat){
           if (parseInt(key) > highest){
             console.log(response.data.chat[key])
-            $('<div class="message">' + response.data.chat[key].User + ' : ' + response.data.chat[key].Message + '</p>').appendTo('#messages');
+            $(makediv(response.data.chat, key)).appendTo('#messages');
             highest = parseInt(key)
           }
         }
@@ -71,28 +159,83 @@
     })
   }, 1000);
 
-  requestLoop
+  var makediv = function(dict, key){
+    var str =  `<div id="chat_` + key + `" class="message button hoverable" user="` + dict[key].User + `" data-toggle="modal" data-target=".bd-example-modal-lg">
+        <div class="message_id">` + dict[key].User + `: </div>
+        <p id="message_contents">` + dict[key].Message + `</p>
+       </div>`
+
+
+    return(str)
+
+  }
+
+  $('#myModal').on('show.bs.modal', function (event) {
+  var clickedChat = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = clickedChat.attr('id') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('#quoted-chat').text('"' + clickedChat.find('#message_contents').text() + '" -- by ' + clickedChat.attr('user'))
+  modal.find('.modal-body input').val(recipient)
+})
+
+
   </script>
 </html>
 
 <style>
+
+@import url(http://fonts.googleapis.com/css?family=Lato:400,300,700);
+
+li {
+  margin-top: 12px;
+}
+li .row {
+  float: right;
+  margin: 0;
+  width: 100%;
+}
+li .row input {
+  border: 2px solid black;
+  margin-bottom: 8px;
+  padding-left: 4px;
+  width: 100%;
+}
+
   .fill {
     height: -moz-calc(100%); /* Firefox */
     height: -webkit-calc(100%); /* Chrome, Safari */
     height: calc(100%); /* IE9+ and future browsers */
 }
 
-html, body {
+#quoted-chat{
+  font-size: 120%;
+  overflow-y: scroll;
+}
+
+html{
+  font-family: 'Lato', sans-serif !important;
+  height: -moz-calc(100%); /* Firefox */
+  height: -webkit-calc(100%); /* Chrome, Safari */
+  height: calc(100%); /* IE9+ and future browsers */
+  overflow: hidden;
+  }
+
+  body {
+    font-family: 'Lato', sans-serif !important;
     height: -moz-calc(100%); /* Firefox */
     height: -webkit-calc(100%); /* Chrome, Safari */
     height: calc(100%); /* IE9+ and future browsers */
+    overflow: auto;
 }
 
 #messages{
+  background-color: white;
   height: -moz-calc(75%); /* Firefox */
   height: -webkit-calc(75%); /* Chrome, Safari */
   height: calc(75%); /* IE9+ and future browsers */
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 #chatbox{
@@ -101,8 +244,131 @@ html, body {
   height: calc(21%); /* IE9+ and future browsers */
 }
 
+.hoverable:hover{
+background-color: #f2f2f2; /* make this whatever you want */
+}
+
+.message{
+  padding-left: 10px;
+}
+
+
+.message_id{
+  font-weight: bold;
+}
+
 textarea {
     resize: none;
 }
+
+.container {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.btn-outline-dark {
+    background-color: transparent;
+    color: inherit;
+    border-color: gray;
+    border-radius: 15px;
+    outline:none !important;
+    transition: all .1s;
+    vertical-align: middle;
+}
+
+.btn-outline-dark:hover{
+    background-color: transparent;
+    color: inherit;
+    border-color: black;
+    border-radius: 15px;
+    /*opacity: 0.7;*/
+    background: #4c4c4c;
+    color: white;
+    transition: all .1s;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.btn-outline-dark:active{
+  background-image: none;
+  outline: 0;
+  box-shadow: 0 0px 0px 0 rgba(0,0,0,0.24), 0 0px 0px 0 rgba(0,0,0,0.19);
+}
+
+.sidebar{
+  box-shadow: 7px 0 9px 7px rgba(0,0,0,0.4);
+}
+
+/* Style all font awesome icons */
+.fa {
+    padding: 20px;
+    font-size: 45px;
+    text-align: center;
+    text-decoration: none;
+    border: 2px;
+}
+
+input:focus {
+    outline:none !important;
+}
+
+/* Add this attribute to the element that needs a tooltip */
+[data-tooltip] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Hide the tooltip content by default */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  visibility: hidden;
+  /*-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;*/
+  pointer-events: none;
+}
+
+/* Position tooltip above the element */
+[data-tooltip]:before {
+  position: absolute;
+  bottom: -25%;
+  left: 50%;
+  margin-bottom: 5px;
+  margin-left: -80px;
+  padding: 7px;
+  width: 160px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 25px;
+  background-color: #000;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  /*-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);*/
+  opacity: 1;
+}
+
+.fa-user{
+  font-size: 100px;
+}
+
+.fa-graduation-cap{
+  font-size: 35px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+
+}
+
 
 </style>
