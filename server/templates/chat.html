@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
+    <title>Talkingpoints</title>
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -31,45 +31,56 @@
     <!-- Sidebar -->
     <div class="col-xs-4 fill sidebar">
       <div class="card col-xs-12">
-        <div class="row"><i class="fa fa-user col-md-3" aria-hidden="true"></i>
-          <div class="card-block col-md-9">
+        <div class="row"><i class="fa fa-user col-lg-3" aria-hidden="true"></i>
+          <div class="card-block col-lg-9">
             <h4 class="card-title">Other user's info</h4>
             <p class="card-text">Here there might be some sort of brief user bio to give some insight into why people feel the way that they do.</p>
           </div>
         </div>
         <hr>
             <div class="row">
-              <div class="col-md-3">
-                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Friendly"><i class="fa fa-child" aria-hidden="true"></i></button>
+              <div class="col-sm-6">
+                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Friendly" id="friendly"><i class="fa fa-child" aria-hidden="true"></i></button>
               </div>
-              <div class="col-xs-9">
+              <span class="col-sm-6" id="friendly_span">0</span>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
                 <p>Commend your conversation partner for being amiable</p>
               </div>
             </div>
             <hr>
+            </div>
+            <hr>
             <div class="row">
-              <div class="col-md-3">
-                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Scholarly"><i class="fa fa-graduation-cap" aria-hidden="true"></i></button>
+              <div class="col-sm-6">
+                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Scholarly" id="scholarly"><i class="fa fa-graduation-cap" aria-hidden="true"></i></button>
               </div>
-              <div class="col-xs-9">
+              <span class="col-sm-6" id="scholarly_span">0</span>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
                 <p>Commend your conversation partner for having ample sources to support their position from credible organizations</p>
               </div>
             </div>
             <hr>
             <div class="row">
-              <div class="col-md-3">
-                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Insightful"><i class="fa fa-lightbulb" aria-hidden="true"></i></button>
+              <div class="col-sm-6">
+                <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Insightful" id="insightful"><i class="fa fa-lightbulb" aria-hidden="true"></i></button>
               </div>
-              <div class="col-xs-9">
+              <span class="col-sm-6" id="insightful_span">0</span>
+            </div>
+            <div class="row">
+              <div class="col-lg-9">
                 <p>Commend your conversation partner for bringing insights you had not thought of to the table</p>
               </div>
             </div>
             <hr>
             <div class="row">
-              <div class="col-md-3">
+              <div class="col-lg-3">
                 <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Report"><i class="fa fa-flag" aria-hidden="true"></i></button>
               </div>
-              <div class="col-xs-9">
+              <div class="col-lg-9">
                 <p>Report your conversation partner</p>
               </div>
             </div>
@@ -89,6 +100,22 @@
       <div class="modal-body" id="quoted-chat">
         test
       </div>
+      <div class="modal-body linkWanted" id="linkDiv">
+        <hr>
+        <div class="form-group">
+            <label for="url-field" class="form-control-label" id="link-label">Link Requested, Please Input Below:</label>
+            <input type="text" class="form-control" id="url-field">
+            <button type="button" class="btn btn-primary" onclick="setLink()" data-dismiss="modal">Post URL</button>
+          </div>
+      </div>
+      <div class="modal-body" id="rebuteDiv">
+        <hr>
+        <div class="form-group">
+            <label for="url-field" class="form-control-label" id="link-label">Please Input Your Rebuttal Link:</label>
+            <input type="text" class="form-control" id="rebuttal-field">
+            <button type="button" class="btn btn-primary" onclick="setRebuttal()" data-dismiss="modal">Post URL</button>
+          </div>
+      </div>
       <hr>
       <div class="modal-body" id="actions">
         <!-- <div class="container"> -->
@@ -100,7 +127,7 @@
               <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Commend message" data-dismiss="modal"><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
             </div>
             <div class="col-xs-3 text-center">
-              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Rebute" data-dismiss="modal"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>
+              <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Rebute" id="rebuteButton"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>
             </div>
             <div class="col-xs-3 text-center">
               <button type="button" class="btn button btn-outline-dark text-center" data-tooltip="Report" data-dismiss="modal"><i class="fa fa-flag" aria-hidden="true"></i></button>
@@ -196,6 +223,7 @@ background-color: #f2f2f2; /* make this whatever you want */
 
 .message{
   padding-left: 10px;
+  padding-bottom: 5px;
   width: 100%;
   /*float: left;*/
 }
@@ -256,6 +284,7 @@ textarea {
 
 .sidebar{
   box-shadow: 7px 0 9px 7px rgba(0,0,0,0.4);
+  overflow-y: scroll;
 }
 
 /* Style all font awesome icons */
@@ -336,6 +365,22 @@ input:focus {
 
 .fa-exclamation{
   font-size: 15px;
+  margin-left:-5px;
+  margin-right:-5px;
+  margin-top:-5px;
+  margin-bottom:-10px;
+}
+
+#friendly_span, #scholarly_span, #insightful_span{
+  font-size: 45px;
+}
+
+.linkSpan{
+  color: #7DB6D5;
+}
+
+.rebuteSpan{
+  color: #E7A555;
 }
 
 </style>
