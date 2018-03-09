@@ -45,6 +45,7 @@ var requestLoop = setInterval(function(){
           if (!$('#chat_' + key).hasClass('Thumbed')){
             $('#chat_' + key).addClass('Thumbed').append('<i class="fa fa-thumbs-up thumb" aria-hidden="true"></i>')
           }
+        }
 
         if (response.data.chat[key].Url !== ''){
           if (!$('#chat_' + key).hasClass('urlSatisfied')){
@@ -52,13 +53,12 @@ var requestLoop = setInterval(function(){
           }
         }
 
-        if (response.data.chat[key].Rebute !== ''){
-          if(!$('#chat_' + key).hasClass('rebuted')){
-            $('#chat_' + key).find('#message_contents').after(makeRebuteDiv(response.data.chat[key].Rebute))
-            $('#chat_' + key).addClass('rebuted')
+        if (response.data.chat[key].Rebut !== ''){
+          if(!$('#chat_' + key).hasClass('rebutd')){
+            $('#chat_' + key).find('#message_contents').after(makeRebutDiv(response.data.chat[key].Rebut))
+            $('#chat_' + key).addClass('rebutd')
           }
         }
-      }
       }
     } else {
       alert(response.data.message)
@@ -125,9 +125,9 @@ var recipient = clickedChat.attr('id') // Extract info from data-* attributes
 // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
 // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
 var modal = $(this)
-modal.find("#rebuteDiv").addClass('hidden')
-modal.find("#rebuteButton").click(function(){
-  modal.find("#rebuteDiv").removeClass('hidden').show()
+modal.find("#rebutDiv").addClass('hidden')
+modal.find("#rebutButton").click(function(){
+  modal.find("#rebutDiv").removeClass('hidden').show()
 })
 modalID = clickedChat
 if (clickedChat.hasClass('linkWanted')){
@@ -196,9 +196,9 @@ var makeLinkDiv = function(link){
   return(str)
 }
 
-var makeRebuteDiv = function(link){
-  var str = `<div class="rebuteDiv">
-  <b><span class="rebuteSpan">Counter Source provided:</span> <b><a href="` + link + `">` + link + `</a><br>
+var makeRebutDiv = function(link){
+  var str = `<div class="rebutDiv">
+  <b><span class="rebutSpan">Counter Source provided:</span> <b><a href="` + link + `">` + link + `</a><br>
   <div>`
   return(str)
 }
