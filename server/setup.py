@@ -109,6 +109,30 @@ def link():
         }
     return jsonify(response)
 
+@app.route('/thumb', methods=['POST'])
+def thumb():
+    req = request.get_json()
+    global chat
+    print(req)
+    try:
+        # chat_row = chat.iloc[int(req['index'])]
+        # print(chat_row)
+        # chat_row['Link'] = 1
+        chat.at[int(req['index']), 'Thumb'] = 1
+        print(chat)
+        response = {
+            'status_code': 200,
+            'message': 'logged'
+        }
+
+    except:
+        print(traceback.format_exc())
+        response = {
+            'status_code': 500,
+            'message': "Error",
+        }
+    return jsonify(response)
+
 
 @app.route('/linkset', methods=['POST'])
 def linkset():

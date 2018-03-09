@@ -41,6 +41,11 @@ var requestLoop = setInterval(function(){
           $('#chat_' + key).removeClass('linkWanted').find(".fa-exclamation").remove()
         }
 
+        if (response.data.chat[key].Thumb === 1){
+          if (!$('#chat_' + key).hasClass('Thumbed')){
+            $('#chat_' + key).addClass('Thumbed').append('<i class="fa fa-thumbs-up thumb" aria-hidden="true"></i>')
+          }
+
         if (response.data.chat[key].Url !== ''){
           if (!$('#chat_' + key).hasClass('urlSatisfied')){
             $('#chat_' + key).addClass('urlSatisfied').removeAttr('data-tooltip').find('#message_contents').after(makeLinkDiv(response.data.chat[key].Url))
@@ -53,7 +58,7 @@ var requestLoop = setInterval(function(){
             $('#chat_' + key).addClass('rebuted')
           }
         }
-
+      }
       }
     } else {
       alert(response.data.message)
@@ -93,7 +98,8 @@ var buttonClick = function(button_type){
     case 'link':
         endpoint = '/link'
         break;
-    case '':
+    case 'thumb':
+      endpoint = '/thumb'
         break;
     default:
         console.log('shouldnt happen')
